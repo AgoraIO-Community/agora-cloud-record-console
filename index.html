@@ -7,15 +7,21 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- hls.js to handle .m3u8 playback in non-Safari browsers -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <link rel="stylesheet" href="modern-ui-library.css">
   <style>
     body {
       overflow-y: auto;
+      background: linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a) !important;
     }
     pre {
       white-space: pre-wrap;
       word-wrap: break-word;
       overflow-x: auto;
     }
+    /* Ensure Tailwind layout classes take precedence */
+    .w-full { width: 100% !important; }
+    .w-1\/2 { width: 50% !important; }
+    .flex-1 { flex: 1 1 0% !important; }
     /* Cloud animation styles */
     @keyframes flyCloud {
       0% {
@@ -49,27 +55,27 @@
   <div class="max-w-6xl mx-auto">
 
     <!-- Button to open the API Credentials popup -->
-    <button onclick="toggleAuthPopup()" class="mb-6 bg-gray-600 hover:bg-gray-700 p-2 rounded font-bold">
+    <button onclick="toggleAuthPopup()" class="mb-6 modern-btn modern-btn-secondary">
       Set API Credentials
     </button>
 
     <div class="grid md:grid-cols-2 gap-6">
       <!-- Recording Control Panel -->
-      <div id="leftPanel" class="bg-gray-800 p-6 rounded-lg shadow-lg">
-        <h1 class="text-xl font-bold mb-4 text-center">Agora Cloud Recording</h1>
+      <div id="leftPanel" class="modern-card">
+        <h1 class="text-xl font-bold mb-4 text-center gradient-text-primary">Agora Cloud Recording</h1>
         <p class="text-sm text-gray-400 mb-4">
           <b>Note:</b> Channel name, UID, and S3 credentials are required. For Web Page Recording, URL is also required.
           All other fields will use recommended defaults if left blank.
         </p>
         <div class="space-y-4">
           <!-- Basic fields -->
-          <input id="cname" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Channel Name (cname)" />
-          <input id="uid" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="UID (Recording UID)" />
+          <input id="cname" type="text" placeholder="Channel Name (cname)" />
+          <input id="uid" type="text" placeholder="UID (Recording UID)" />
           <!-- Moved token input below UID -->
-          <input id="token" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Token (optional)"/>
+          <input id="token" type="text" placeholder="Token (optional)"/>
           
-          <label class="block mb-2">Recording Mode:</label>
-          <select id="modeSelect" class="w-full p-2 rounded bg-gray-700 text-white">
+          <label>Recording Mode:</label>
+          <select id="modeSelect">
             <option value="composite">Composite</option>
             <option value="individual">Individual</option>
             <option value="web">Web</option>
@@ -92,29 +98,29 @@
 
           <!-- Buttons to Acquire, Start, Update, Stop -->
           <div class="grid grid-cols-2 gap-2">
-            <button id="acquireBtn" class="bg-green-600 hover:bg-green-700 p-2 rounded font-bold">Acquire</button>
-            <button id="startBtn" class="bg-blue-600 hover:bg-blue-700 p-2 rounded font-bold">Start</button>
-            <button id="updateBtn" class="bg-yellow-600 hover:bg-yellow-700 p-2 rounded font-bold">Update</button>
-            <button id="stopBtn" class="bg-red-600 hover:bg-red-700 p-2 rounded font-bold">Stop</button>
+            <button id="acquireBtn" class="modern-btn modern-btn-success">Acquire</button>
+            <button id="startBtn" class="modern-btn modern-btn-primary">Start</button>
+            <button id="updateBtn" class="modern-btn modern-btn-warning">Update</button>
+            <button id="stopBtn" class="modern-btn modern-btn-danger">Stop</button>
           </div>
 
           <!-- Buttons for Copy Request Bodies -->
           <div class="flex space-x-2">
-            <button id="copyStartBodyBtn" onclick="copyStartRequestBody()" class="w-1/2 bg-purple-600 hover:bg-purple-700 p-2 rounded font-bold">
+            <button id="copyStartBodyBtn" onclick="copyStartRequestBody()" class="w-1/2 modern-btn modern-btn-secondary">
               Copy Start Request Body
             </button>
-            <button id="copyUpdateBodyBtn" onclick="copyUpdateRequestBody()" class="w-1/2 bg-purple-600 hover:bg-purple-700 p-2 rounded font-bold">
+            <button id="copyUpdateBodyBtn" onclick="copyUpdateRequestBody()" class="w-1/2 modern-btn modern-btn-secondary">
               Copy Update Request Body
             </button>
           </div>
         </div>
         <!-- Response panel -->
-        <pre id="response" class="mt-4 p-2 bg-gray-700 rounded text-sm"></pre>
+        <pre id="response" class="mt-4"></pre>
       </div>
 
       <!-- Query Panel -->
-      <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
-        <h1 class="text-xl font-bold mb-4 text-center">Query Recording</h1>
+      <div class="modern-card">
+        <h1 class="text-xl font-bold mb-4 text-center gradient-text-primary">Query Recording</h1>
         
         <p class="text-sm text-gray-400 mb-3">
           If you enter Resource ID and SID here, they will also be used for Update and Stop requests if the checkbox below is checked. 
@@ -122,8 +128,8 @@
         </p>
 
         <!-- Resource ID / SID -->
-        <input id="resourceId" class="w-full p-2 mb-2 rounded bg-gray-700 text-white" placeholder="Resource ID" />
-        <input id="sid" class="w-full p-2 mb-2 rounded bg-gray-700 text-white" placeholder="Session ID (SID)" />
+        <input id="resourceId" type="text" placeholder="Resource ID" />
+        <input id="sid" type="text" placeholder="Session ID (SID)" />
         
         <!-- Checkbox to pick which IDs to use for Update/Stop -->
         <label class="flex items-center mb-2 text-sm">
@@ -132,12 +138,12 @@
         </label>
 
         <!-- Query button -->
-        <button id="queryBtn" class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded font-bold mb-2">
+        <button id="queryBtn" class="w-full modern-btn modern-btn-primary mb-2">
           Query
         </button>
         
         <!-- Query results -->
-        <pre id="queryResult" class="p-2 bg-gray-700 rounded text-sm min-h-[200px]"></pre>
+        <pre id="queryResult" class="min-h-[200px]"></pre>
       </div>
     </div>
 
@@ -148,12 +154,11 @@
             <input
               type="text"
               id="publicUrlInput"
-              class="w-full p-2 rounded bg-gray-700 text-white"
               placeholder="Public URL will appear here (only works with new recorder for m3u8), will update to mp4 after stop"
             />
             <button
               id="copyM3u8LinkBtn"
-              class="hidden bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 text-sm rounded"
+              class="hidden modern-btn modern-btn-secondary text-white px-3 py-1 text-sm rounded"
             >
               Copy
             </button>
@@ -170,13 +175,13 @@
 
     <!-- Auth Popup -->
     <div id="authPopup" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-      <div class="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-sm">
-        <h2 class="text-lg font-bold mb-2">RESTful API Credentials</h2>
+      <div class="modern-card w-full max-w-sm">
+        <h2 class="text-lg font-bold mb-2 gradient-text-primary">RESTful API Credentials</h2>
         <p class="text-sm mb-4">Enter your Agora Customer ID and Secret for authentication.</p>
-        <input id="customerId" class="w-full p-2 mb-2 rounded bg-gray-700 text-white" placeholder="Customer ID" />
-        <input id="customerSecret" class="w-full p-2 mb-4 rounded bg-gray-700 text-white" placeholder="Customer Secret" type="password" />
-        <input id="appid" class="w-full p-2 mb-4 rounded bg-gray-700 text-white" placeholder="App ID" />
-        <button onclick="onCloseAuth()" class="w-full bg-red-600 hover:bg-red-700 p-2 rounded font-bold">Close</button>
+        <input id="customerId" type="text" placeholder="Customer ID" />
+        <input id="customerSecret" type="password" placeholder="Customer Secret" />
+        <input id="appid" type="text" placeholder="App ID" />
+        <button onclick="onCloseAuth()" class="w-full modern-btn modern-btn-danger">Close</button>
       </div>
     </div>
   </div>
@@ -441,54 +446,54 @@
       return `
         <p class="text-sm font-semibold">Start Configs (Composite):</p>
         <!-- Using common token input above; no separate composite token -->
-        <input id="compositeMaxIdleTime" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Max Idle Time (default=30)"/>
-        <label class="block text-sm font-semibold">Stream Types:</label>
-        <select id="compositeStreamTypes" class="w-full p-2 rounded bg-gray-700 text-white">
+        <input id="compositeMaxIdleTime" type="number" placeholder="Max Idle Time (default=30)"/>
+        <label>Stream Types:</label>
+        <select id="compositeStreamTypes">
           <option value="0">0: Audio Only</option>
           <option value="1">1: Video Only</option>
           <option value="2" selected>2: Audio + Video (Default)</option>
         </select>
         <p class="text-sm font-semibold mt-2">Audio UIDs (comma-separated):</p>
-        <input id="compositeSubscribeAudioUids" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Subscribe Audio UIDs"/>
-        <input id="compositeUnsubscribeAudioUids" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Unsubscribe Audio UIDs"/>
+        <input id="compositeSubscribeAudioUids" type="text" placeholder="Subscribe Audio UIDs"/>
+        <input id="compositeUnsubscribeAudioUids" type="text" placeholder="Unsubscribe Audio UIDs"/>
         <p class="text-sm font-semibold mt-2">Video UIDs (comma-separated):</p>
-        <input id="compositeSubscribeVideoUids" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Subscribe Video UIDs"/>
-        <input id="compositeUnsubscribeVideoUids" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Unsubscribe Video UIDs"/>
-        <input id="compositeSubscribeUidGroup" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Subscribe UID Group (0 or 1)"/>
+        <input id="compositeSubscribeVideoUids" type="text" placeholder="Subscribe Video UIDs"/>
+        <input id="compositeUnsubscribeVideoUids" type="text" placeholder="Unsubscribe Video UIDs"/>
+        <input id="compositeSubscribeUidGroup" type="text" placeholder="Subscribe UID Group (0 or 1)"/>
         <p class="text-sm font-semibold">Composite Transcoding (for Start):</p>
-        <label class="block text-sm font-semibold">Audio Profile:</label>
-        <select id="compositeAudioProfile" class="w-full p-2 rounded bg-gray-700 text-white">
+        <label>Audio Profile:</label>
+        <select id="compositeAudioProfile">
           <option value="0">0: 48kHz, mono, ~48 Kbps (Default)</option>
           <option value="1">1: 48kHz, mono, ~128 Kbps</option>
           <option value="2">2: 48kHz, stereo, ~192 Kbps</option>
         </select>
         <label class="block text-sm font-semibold">Channel Type:</label>
-        <select id="compositeChannelType" class="w-full p-2 rounded bg-gray-700 text-white">
+        <select id="compositeChannelType" class="w-full">
           <option value="0" selected>0: Communication (Default)</option>
           <option value="1">1: Live Streaming</option>
         </select>
         <label class="block text-sm font-semibold">Video Stream Type:</label>
-        <select id="compositeVideoStreamType" class="w-full p-2 rounded bg-gray-700 text-white">
+        <select id="compositeVideoStreamType" class="w-full">
           <option value="0" selected>0: High-Quality (Default)</option>
           <option value="1">1: Low-Quality</option>
         </select>
-        <label class="block text-sm font-semibold">Mixed Video Layout:</label>
-        <select id="compositeTranscodingLayout" class="w-full p-2 rounded bg-gray-700 text-white">
+        <label>Mixed Video Layout:</label>
+        <select id="compositeTranscodingLayout">
           <option value="0" selected>0: Floating Layout (Default)</option>
           <option value="1">1: Adaptive Layout</option>
           <option value="2">2: Vertical Layout</option>
           <option value="3">3: Customized Layout</option>
         </select>
-        <input id="compositeTranscodingWidth" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Width (default=360)"/>
-        <input id="compositeTranscodingHeight" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Height (default=640)"/>
-        <input id="compositeTranscodingBitrate" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Bitrate (default=500)"/>
-        <input id="compositeTranscodingFps" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="FPS (default=15)"/>
+        <input id="compositeTranscodingWidth" type="number" placeholder="Width (default=360)"/>
+        <input id="compositeTranscodingHeight" type="number" placeholder="Height (default=640)"/>
+        <input id="compositeTranscodingBitrate" type="number" placeholder="Bitrate (default=500)"/>
+        <input id="compositeTranscodingFps" type="number" placeholder="FPS (default=15)"/>
         <p class="text-sm font-semibold">Storage (for Start only):</p>
-        <input id="compositeAccessKey" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Storage Access Key"/>
-        <input id="compositeSecretKey" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Storage Secret Key"/>
-        <input id="compositeBucket" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Storage Bucket"/>
-        <label class="block text-sm font-semibold">Vendor:</label>
-        <select id="compositeVendor" class="w-full p-2 rounded bg-gray-700 text-white" onchange="updateStorageRegion('composite')">
+        <input id="compositeAccessKey" type="text" placeholder="Storage Access Key"/>
+        <input id="compositeSecretKey" type="text" placeholder="Storage Secret Key"/>
+        <input id="compositeBucket" type="text" placeholder="Storage Bucket"/>
+        <label>Vendor:</label>
+        <select id="compositeVendor" onchange="updateStorageRegion('composite')">
           <option value="1" selected>Amazon S3</option>
           <option value="2">Alibaba Cloud</option>
           <option value="3">Tencent Cloud</option>
@@ -498,15 +503,15 @@
           <option value="8">Baidu Smart Cloud</option>
         </select>
         <label class="block text-sm font-semibold">Region:</label>
-        <select id="compositeRegion" class="w-full p-2 rounded bg-gray-700 text-white"></select>
-        <input id="compositeFileNamePrefix" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="File Name Prefix (comma-separated)"/>
+        <select id="compositeRegion"></select>
+        <input id="compositeFileNamePrefix" type="text" placeholder="File Name Prefix (comma-separated)"/>
         
         <!-- Snapshot Config for Composite -->
         <div id="compositeSnapshotConfig" class="hidden">
           <p class="text-sm font-semibold mt-2">Snapshot Config:</p>
-          <input id="compositeSnapshotCaptureInterval" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Capture Interval (default=10)" value="10"/>
-          <label class="block text-sm font-semibold">File Type:</label>
-          <select id="compositeSnapshotFileType" class="w-full p-2 rounded bg-gray-700 text-white">
+          <input id="compositeSnapshotCaptureInterval" type="number" placeholder="Capture Interval (default=10)" value="10"/>
+          <label>File Type:</label>
+          <select id="compositeSnapshotFileType">
             <option value="jpg" selected>jpg</option>
           </select>
         </div>
@@ -521,36 +526,36 @@
       return `
         <p class="text-sm font-semibold">Start Configs (Individual):</p>
         <!-- Using common token input; no separate individual token -->
-        <input id="individualMaxIdleTime" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Max Idle Time (default=30)"/>
-        <label class="block text-sm font-semibold">Stream Types:</label>
-        <select id="individualStreamTypes" class="w-full p-2 rounded bg-gray-700 text-white">
+        <input id="individualMaxIdleTime" type="number" placeholder="Max Idle Time (default=30)"/>
+        <label>Stream Types:</label>
+        <select id="individualStreamTypes">
           <option value="0">0: Audio Only</option>
           <option value="1">1: Video Only</option>
           <option value="2" selected>2: Audio + Video (Default)</option>
         </select>
         <p class="text-sm font-semibold mt-2">Audio UIDs (comma-separated):</p>
-        <input id="individualSubscribeAudioUids" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Subscribe Audio UIDs"/>
-        <input id="individualUnsubscribeAudioUids" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Unsubscribe Audio UIDs"/>
+        <input id="individualSubscribeAudioUids" type="text" placeholder="Subscribe Audio UIDs"/>
+        <input id="individualUnsubscribeAudioUids" type="text" placeholder="Unsubscribe Audio UIDs"/>
         <p class="text-sm font-semibold mt-2">Video UIDs (comma-separated):</p>
-        <input id="individualSubscribeVideoUids" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Subscribe Video UIDs"/>
-        <input id="individualUnsubscribeVideoUids" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Unsubscribe Video UIDs"/>
-        <input id="individualSubscribeUidGroup" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Subscribe UID Group (0 or 1)"/>
-        <label class="block text-sm font-semibold">Channel Type:</label>
-        <select id="individualChannelType" class="w-full p-2 rounded bg-gray-700 text-white">
+        <input id="individualSubscribeVideoUids" type="text" placeholder="Subscribe Video UIDs"/>
+        <input id="individualUnsubscribeVideoUids" type="text" placeholder="Unsubscribe Video UIDs"/>
+        <input id="individualSubscribeUidGroup" type="text" placeholder="Subscribe UID Group (0 or 1)"/>
+        <label>Channel Type:</label>
+        <select id="individualChannelType">
           <option value="0" selected>0: Communication (Default)</option>
           <option value="1">1: Live Streaming</option>
         </select>
-        <label class="block text-sm font-semibold">Video Stream Type:</label>
-        <select id="individualVideoStreamType" class="w-full p-2 rounded bg-gray-700 text-white">
+        <label>Video Stream Type:</label>
+        <select id="individualVideoStreamType">
           <option value="0" selected>0: High-Quality (Default)</option>
           <option value="1">1: Low-Quality</option>
         </select>
         <p class="text-sm font-semibold">Storage (for Start only):</p>
-        <input id="individualAccessKey" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Storage Access Key"/>
-        <input id="individualSecretKey" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Storage Secret Key"/>
-        <input id="individualBucket" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Storage Bucket"/>
-        <label class="block text-sm font-semibold">Vendor:</label>
-        <select id="individualVendor" class="w-full p-2 rounded bg-gray-700 text-white" onchange="updateStorageRegion('individual')">
+        <input id="individualAccessKey" type="text" placeholder="Storage Access Key"/>
+        <input id="individualSecretKey" type="text" placeholder="Storage Secret Key"/>
+        <input id="individualBucket" type="text" placeholder="Storage Bucket"/>
+        <label>Vendor:</label>
+        <select id="individualVendor" onchange="updateStorageRegion('individual')">
           <option value="1" selected>Amazon S3</option>
           <option value="2">Alibaba Cloud</option>
           <option value="3">Tencent Cloud</option>
@@ -560,15 +565,15 @@
           <option value="8">Baidu Smart Cloud</option>
         </select>
         <label class="block text-sm font-semibold">Region:</label>
-        <select id="individualRegion" class="w-full p-2 rounded bg-gray-700 text-white"></select>
-        <input id="individualFileNamePrefix" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="File Name Prefix (comma-separated)"/>
+        <select id="individualRegion"></select>
+        <input id="individualFileNamePrefix" type="text" placeholder="File Name Prefix (comma-separated)"/>
         
         <!-- Snapshot Config for Individual -->
         <div id="individualSnapshotConfig" class="hidden">
           <p class="text-sm font-semibold mt-2">Snapshot Config:</p>
-          <input id="individualSnapshotCaptureInterval" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Capture Interval (default=10)" value="10"/>
-          <label class="block text-sm font-semibold">File Type:</label>
-          <select id="individualSnapshotFileType" class="w-full p-2 rounded bg-gray-700 text-white">
+          <input id="individualSnapshotCaptureInterval" type="number" placeholder="Capture Interval (default=10)" value="10"/>
+          <label>File Type:</label>
+          <select id="individualSnapshotFileType">
             <option value="jpg" selected>jpg</option>
             <option value="png">png</option>
           </select>
@@ -584,23 +589,23 @@
       return `
         <p class="text-sm font-semibold">Start Configs (Web):</p>
         <!-- Using common token input; no separate web token -->
-        <input id="webUrl" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Web URL"/>
-        <input id="webMaxRecordingHour" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Max Recording Hour (default=3)"/>
+        <input id="webUrl" type="text" placeholder="Web URL"/>
+        <input id="webMaxRecordingHour" type="number" placeholder="Max Recording Hour (default=3)"/>
         <p class="text-sm font-semibold">Web Recorder Service Config:</p>
-        <label class="block text-sm font-semibold">Audio Profile:</label>
-        <select id="webAudioProfile" class="w-full p-2 rounded bg-gray-700 text-white">
+        <label>Audio Profile:</label>
+        <select id="webAudioProfile">
           <option value="0" selected>0: 48kHz, mono, ~48 Kbps (Default)</option>
           <option value="1">1: 48kHz, mono, ~128 Kbps</option>
           <option value="2">2: 48kHz, stereo, ~192 Kbps</option>
         </select>
-        <input id="webVideoWidth" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Video Width (1280)"/>
-        <input id="webVideoHeight" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Video Height (720)"/>
+        <input id="webVideoWidth" type="number" placeholder="Video Width (1280)"/>
+        <input id="webVideoHeight" type="number" placeholder="Video Height (720)"/>
         <p class="text-sm font-semibold">Storage (for Start only):</p>
-        <input id="webAccessKey" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Storage Access Key"/>
-        <input id="webSecretKey" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Storage Secret Key"/>
-        <input id="webBucket" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Storage Bucket"/>
-        <label class="block text-sm font-semibold">Vendor:</label>
-        <select id="webVendor" class="w-full p-2 rounded bg-gray-700 text-white" onchange="updateStorageRegion('web')">
+        <input id="webAccessKey" type="text" placeholder="Storage Access Key"/>
+        <input id="webSecretKey" type="text" placeholder="Storage Secret Key"/>
+        <input id="webBucket" type="text" placeholder="Storage Bucket"/>
+        <label>Vendor:</label>
+        <select id="webVendor" onchange="updateStorageRegion('web')">
           <option value="1" selected>Amazon S3</option>
           <option value="2">Alibaba Cloud</option>
           <option value="3">Tencent Cloud</option>
@@ -610,8 +615,8 @@
           <option value="8">Baidu Smart Cloud</option>
         </select>
         <label class="block text-sm font-semibold">Region:</label>
-        <select id="webRegion" class="w-full p-2 rounded bg-gray-700 text-white"></select>
-        <input id="webFileNamePrefix" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="File Name Prefix (comma-separated)"/>
+        <select id="webRegion"></select>
+        <input id="webFileNamePrefix" type="text" placeholder="File Name Prefix (comma-separated)"/>
         
         <hr class="border-gray-600 my-2" />
         <p class="text-sm font-semibold">Update (Web):</p>
