@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- hls.js to handle .m3u8 playback in non-Safari browsers -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <link rel="stylesheet" href="modern-ui-library.css">
   <style>
     body {
       overflow-y: auto;
@@ -16,6 +17,10 @@
       word-wrap: break-word;
       overflow-x: auto;
     }
+    /* Ensure Tailwind layout classes take precedence */
+    .w-full { width: 100% !important; }
+    .w-1\/2 { width: 50% !important; }
+    .flex-1 { flex: 1 1 0% !important; }
     /* Cloud animation styles */
     @keyframes flyCloud {
       0% {
@@ -49,14 +54,14 @@
   <div class="max-w-6xl mx-auto">
 
     <!-- Button to open the API Credentials popup -->
-    <button onclick="toggleAuthPopup()" class="mb-6 bg-gray-600 hover:bg-gray-700 p-2 rounded font-bold">
+    <button onclick="toggleAuthPopup()" class="mb-6 modern-btn modern-btn-secondary p-2 rounded font-bold">
       Set API Credentials
     </button>
 
     <div class="grid md:grid-cols-2 gap-6">
       <!-- Recording Control Panel -->
-      <div id="leftPanel" class="bg-gray-800 p-6 rounded-lg shadow-lg">
-        <h1 class="text-xl font-bold mb-4 text-center">Agora Cloud Recording</h1>
+      <div id="leftPanel" class="modern-card bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h1 class="text-xl font-bold mb-4 text-center gradient-text-primary">Agora Cloud Recording</h1>
         <p class="text-sm text-gray-400 mb-4">
           <b>Note:</b> Channel name, UID, and S3 credentials are required. For Web Page Recording, URL is also required.
           All other fields will use recommended defaults if left blank.
@@ -92,18 +97,18 @@
 
           <!-- Buttons to Acquire, Start, Update, Stop -->
           <div class="grid grid-cols-2 gap-2">
-            <button id="acquireBtn" class="bg-green-600 hover:bg-green-700 p-2 rounded font-bold">Acquire</button>
-            <button id="startBtn" class="bg-blue-600 hover:bg-blue-700 p-2 rounded font-bold">Start</button>
-            <button id="updateBtn" class="bg-yellow-600 hover:bg-yellow-700 p-2 rounded font-bold">Update</button>
-            <button id="stopBtn" class="bg-red-600 hover:bg-red-700 p-2 rounded font-bold">Stop</button>
+            <button id="acquireBtn" class="modern-btn modern-btn-success p-2 rounded font-bold">Acquire</button>
+            <button id="startBtn" class="modern-btn modern-btn-primary p-2 rounded font-bold">Start</button>
+            <button id="updateBtn" class="modern-btn modern-btn-warning p-2 rounded font-bold">Update</button>
+            <button id="stopBtn" class="modern-btn modern-btn-danger p-2 rounded font-bold">Stop</button>
           </div>
 
           <!-- Buttons for Copy Request Bodies -->
           <div class="flex space-x-2">
-            <button id="copyStartBodyBtn" onclick="copyStartRequestBody()" class="w-1/2 bg-purple-600 hover:bg-purple-700 p-2 rounded font-bold">
+            <button id="copyStartBodyBtn" onclick="copyStartRequestBody()" class="w-1/2 modern-btn modern-btn-secondary p-2 rounded font-bold">
               Copy Start Request Body
             </button>
-            <button id="copyUpdateBodyBtn" onclick="copyUpdateRequestBody()" class="w-1/2 bg-purple-600 hover:bg-purple-700 p-2 rounded font-bold">
+            <button id="copyUpdateBodyBtn" onclick="copyUpdateRequestBody()" class="w-1/2 modern-btn modern-btn-secondary p-2 rounded font-bold">
               Copy Update Request Body
             </button>
           </div>
@@ -113,8 +118,8 @@
       </div>
 
       <!-- Query Panel -->
-      <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
-        <h1 class="text-xl font-bold mb-4 text-center">Query Recording</h1>
+      <div class="modern-card bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h1 class="text-xl font-bold mb-4 text-center gradient-text-primary">Query Recording</h1>
         
         <p class="text-sm text-gray-400 mb-3">
           If you enter Resource ID and SID here, they will also be used for Update and Stop requests if the checkbox below is checked. 
@@ -132,7 +137,7 @@
         </label>
 
         <!-- Query button -->
-        <button id="queryBtn" class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded font-bold mb-2">
+        <button id="queryBtn" class="w-full modern-btn modern-btn-primary p-2 rounded font-bold mb-2">
           Query
         </button>
         
@@ -153,7 +158,7 @@
             />
             <button
               id="copyM3u8LinkBtn"
-              class="hidden bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 text-sm rounded"
+              class="hidden modern-btn modern-btn-secondary text-white px-3 py-1 text-sm rounded"
             >
               Copy
             </button>
@@ -170,13 +175,13 @@
 
     <!-- Auth Popup -->
     <div id="authPopup" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-      <div class="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-sm">
-        <h2 class="text-lg font-bold mb-2">RESTful API Credentials</h2>
+      <div class="modern-card bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-sm">
+        <h2 class="text-lg font-bold mb-2 gradient-text-primary">RESTful API Credentials</h2>
         <p class="text-sm mb-4">Enter your Agora Customer ID and Secret for authentication.</p>
         <input id="customerId" class="w-full p-2 mb-2 rounded bg-gray-700 text-white" placeholder="Customer ID" />
         <input id="customerSecret" class="w-full p-2 mb-4 rounded bg-gray-700 text-white" placeholder="Customer Secret" type="password" />
         <input id="appid" class="w-full p-2 mb-4 rounded bg-gray-700 text-white" placeholder="App ID" />
-        <button onclick="onCloseAuth()" class="w-full bg-red-600 hover:bg-red-700 p-2 rounded font-bold">Close</button>
+        <button onclick="onCloseAuth()" class="w-full modern-btn modern-btn-danger p-2 rounded font-bold">Close</button>
       </div>
     </div>
   </div>
