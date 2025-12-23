@@ -373,6 +373,55 @@
           if (individualConfig) individualConfig.classList.add("hidden");
         }
       });
+
+      // JSON Display Modal event handlers
+      const jsonModal = document.getElementById('jsonDisplayModal');
+      const closeJsonModal = document.getElementById('closeJsonModal');
+      const closeJsonModalBtn = document.getElementById('closeJsonModalBtn');
+      const copyJsonFromModal = document.getElementById('copyJsonFromModal');
+
+      // Close modal when clicking the X button
+      if (closeJsonModal) {
+        closeJsonModal.addEventListener('click', function() {
+          jsonModal.classList.add('hidden');
+        });
+      }
+
+      // Close modal when clicking the Close button
+      if (closeJsonModalBtn) {
+        closeJsonModalBtn.addEventListener('click', function() {
+          jsonModal.classList.add('hidden');
+        });
+      }
+
+      // Copy JSON from modal
+      if (copyJsonFromModal) {
+        copyJsonFromModal.addEventListener('click', function() {
+          const jsonContent = document.getElementById('jsonModalContent');
+          if (jsonContent) {
+            navigator.clipboard.writeText(jsonContent.textContent).then(() => {
+              // Show brief feedback
+              const btn = copyJsonFromModal;
+              const originalText = btn.textContent;
+              btn.textContent = 'Copied!';
+              setTimeout(() => {
+                btn.textContent = originalText;
+              }, 2000);
+            }).catch(err => {
+              alert("Failed to copy: " + err);
+            });
+          }
+        });
+      }
+
+      // Close modal when clicking outside
+      if (jsonModal) {
+        jsonModal.addEventListener('click', function(e) {
+          if (e.target === jsonModal) {
+            jsonModal.classList.add('hidden');
+          }
+        });
+      }
     };
 
     function toggleAuthPopup() {
@@ -1452,8 +1501,19 @@
         return;
       }
       const bodyString = JSON.stringify(body, null, 2);
+      
+      // Copy to clipboard
       navigator.clipboard.writeText(bodyString).then(() => {
-        alert("Start request body copied to clipboard!");
+        // Show modal with JSON content
+        const jsonModal = document.getElementById('jsonDisplayModal');
+        const jsonModalTitle = document.getElementById('jsonModalTitle');
+        const jsonModalContent = document.getElementById('jsonModalContent');
+        
+        if (jsonModal && jsonModalTitle && jsonModalContent) {
+          jsonModalTitle.textContent = 'Start Request Body JSON';
+          jsonModalContent.textContent = bodyString;
+          jsonModal.classList.remove('hidden');
+        }
       }).catch(err => {
         alert("Failed to copy: " + err);
       });
@@ -1466,8 +1526,19 @@
         return;
       }
       const bodyString = JSON.stringify(body, null, 2);
+      
+      // Copy to clipboard
       navigator.clipboard.writeText(bodyString).then(() => {
-        alert("Update request body copied to clipboard!");
+        // Show modal with JSON content
+        const jsonModal = document.getElementById('jsonDisplayModal');
+        const jsonModalTitle = document.getElementById('jsonModalTitle');
+        const jsonModalContent = document.getElementById('jsonModalContent');
+        
+        if (jsonModal && jsonModalTitle && jsonModalContent) {
+          jsonModalTitle.textContent = 'Update Request Body JSON';
+          jsonModalContent.textContent = bodyString;
+          jsonModal.classList.remove('hidden');
+        }
       }).catch(err => {
         alert("Failed to copy: " + err);
       });
@@ -1502,6 +1573,30 @@
       });
     }
   </script>
+  
+  <!-- JSON Display Modal -->
+  <div id="jsonDisplayModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="modern-card w-full max-w-4xl mx-4 max-h-[90vh] min-h-[400px] flex flex-col">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-bold gradient-text-primary" id="jsonModalTitle">JSON Configuration</h3>
+        <button id="closeJsonModal" class="text-gray-400 hover:text-white text-2xl font-bold leading-none">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="flex-1 overflow-hidden min-h-0">
+        <pre id="jsonModalContent" class="bg-gray-900 text-green-400 p-4 rounded text-sm overflow-auto h-full font-mono whitespace-pre-wrap max-h-full"></pre>
+      </div>
+      <div class="flex justify-end mt-4 space-x-2">
+        <button id="copyJsonFromModal" class="modern-btn modern-btn-primary">
+          Copy to Clipboard
+        </button>
+        <button id="closeJsonModalBtn" class="modern-btn modern-btn-secondary">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
   <a
   href="https://github.com/AgoraIO-Community/cloud_record_console"
   target="_blank"
