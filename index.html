@@ -373,6 +373,55 @@
           if (individualConfig) individualConfig.classList.add("hidden");
         }
       });
+
+      // JSON Display Modal event handlers
+      const jsonModal = document.getElementById('jsonDisplayModal');
+      const closeJsonModal = document.getElementById('closeJsonModal');
+      const closeJsonModalBtn = document.getElementById('closeJsonModalBtn');
+      const copyJsonFromModal = document.getElementById('copyJsonFromModal');
+
+      // Close modal when clicking the X button
+      if (closeJsonModal) {
+        closeJsonModal.addEventListener('click', function() {
+          jsonModal.classList.add('hidden');
+        });
+      }
+
+      // Close modal when clicking the Close button
+      if (closeJsonModalBtn) {
+        closeJsonModalBtn.addEventListener('click', function() {
+          jsonModal.classList.add('hidden');
+        });
+      }
+
+      // Copy JSON from modal
+      if (copyJsonFromModal) {
+        copyJsonFromModal.addEventListener('click', function() {
+          const jsonContent = document.getElementById('jsonModalContent');
+          if (jsonContent) {
+            navigator.clipboard.writeText(jsonContent.textContent).then(() => {
+              // Show brief feedback
+              const btn = copyJsonFromModal;
+              const originalText = btn.textContent;
+              btn.textContent = 'Copied!';
+              setTimeout(() => {
+                btn.textContent = originalText;
+              }, 2000);
+            }).catch(err => {
+              alert("Failed to copy: " + err);
+            });
+          }
+        });
+      }
+
+      // Close modal when clicking outside
+      if (jsonModal) {
+        jsonModal.addEventListener('click', function(e) {
+          if (e.target === jsonModal) {
+            jsonModal.classList.add('hidden');
+          }
+        });
+      }
     };
 
     function toggleAuthPopup() {
@@ -1445,32 +1494,283 @@
     }
 
     /* ---------------- COPY REQUEST BODY BUTTONS ---------------- */
-    function copyStartRequestBody() {
-      const body = buildStartRequestBody();
-      if (!body) {
-        alert("Start request body is invalid or missing required fields.");
-        return;
+    /* ---------------- BUILD REQUEST BODY WITHOUT VALIDATION (FOR DISPLAY) ---------------- */
+    function buildStartRequestBodyForDisplay() {
+      if (globalMode === "composite") return buildStartBodyCompositeForDisplay();
+      if (globalMode === "individual") return buildStartBodyIndividualForDisplay();
+      if (globalMode === "web") return buildStartBodyWebForDisplay();
+      return {};
+    }
+
+    function buildStartBodyCompositeForDisplay() {
+      const cname = document.getElementById("cname").value.trim() || "";
+      const uid = document.getElementById("uid").value.trim() || "";
+      const token = document.getElementById("token").value.trim() || "";
+      const maxIdleTime = intVal("compositeMaxIdleTime", 30);
+      const streamTypes = intVal("compositeStreamTypes", 2);
+      const subscribeVideoUids = arrayVal("compositeSubscribeVideoUids");
+      const unsubscribeVideoUids = arrayVal("compositeUnsubscribeVideoUids");
+      const subscribeAudioUids = arrayVal("compositeSubscribeAudioUids");
+      const unsubscribeAudioUids = arrayVal("compositeUnsubscribeAudioUids");
+      const subscribeUidGroup = intVal("compositeSubscribeUidGroup", 0);
+      const audioProfile = intVal("compositeAudioProfile", 0);
+      const channelType = intVal("compositeChannelType", 0);
+      const videoStreamType = intVal("compositeVideoStreamType", 0);
+      const width = intVal("compositeTranscodingWidth", 360);
+      const height = intVal("compositeTranscodingHeight", 640);
+      const bitrate = intVal("compositeTranscodingBitrate", 500);
+      const fps = intVal("compositeTranscodingFps", 15);
+      const mixedVideoLayout = intVal("compositeTranscodingLayout", 0);
+      const accessKey = document.getElementById("compositeAccessKey").value.trim() || "";
+      const secretKey = document.getElementById("compositeSecretKey").value.trim() || "";
+      const vendor = intVal("compositeVendor", 1);
+      const region = intVal("compositeRegion", 0);
+      const bucket = document.getElementById("compositeBucket").value.trim() || "";
+      const fileNamePrefix = arrayVal("compositeFileNamePrefix");
+
+      const request = {
+        cname,
+        uid,
+        clientRequest: {
+          token: token || "",
+          recordingConfig: {
+            maxIdleTime,
+            streamTypes,
+            audioProfile,
+            channelType,
+            videoStreamType,
+            transcodingConfig: {
+              width,
+              height,
+              bitrate,
+              fps,
+              mixedVideoLayout
+            },
+            subscribeVideoUids,
+            unsubscribeVideoUids,
+            subscribeAudioUids,
+            unsubscribeAudioUids,
+            subscribeUidGroup,
+            extensionParams: {
+              enableLivePlaylist: true
+            }
+          },
+          storageConfig: {
+            accessKey,
+            secretKey,
+            region,
+            vendor,
+            bucket,
+            fileNamePrefix
+          }
+        }
+      };
+
+      const snapshotConfig = getSnapshotConfig("composite");
+      if (snapshotConfig) {
+        request.clientRequest.snapshotConfig = snapshotConfig;
       }
+
+      if (shouldIncludeMp4()) {
+        request.clientRequest.recordingFileConfig = { avFileType: ["hls", "mp4"] };
+      }
+      return request;
+    }
+
+    function buildStartBodyIndividualForDisplay() {
+      const cname = document.getElementById("cname").value.trim() || "";
+      const uid = document.getElementById("uid").value.trim() || "";
+      const token = document.getElementById("token").value.trim() || "";
+      const maxIdleTime = intVal("individualMaxIdleTime", 30);
+      const streamTypes = intVal("individualStreamTypes", 2);
+      const subscribeVideoUids = arrayVal("individualSubscribeVideoUids");
+      const unsubscribeVideoUids = arrayVal("individualUnsubscribeVideoUids");
+      const subscribeAudioUids = arrayVal("individualSubscribeAudioUids");
+      const unsubscribeAudioUids = arrayVal("individualUnsubscribeAudioUids");
+      const subscribeUidGroup = intVal("individualSubscribeUidGroup", 0);
+      const channelType = intVal("individualChannelType", 0);
+      const videoStreamType = intVal("individualVideoStreamType", 0);
+      const accessKey = document.getElementById("individualAccessKey").value.trim() || "";
+      const secretKey = document.getElementById("individualSecretKey").value.trim() || "";
+      const vendor = intVal("individualVendor", 1);
+      const region = intVal("individualRegion", 0);
+      const bucket = document.getElementById("individualBucket").value.trim() || "";
+      const fileNamePrefix = arrayVal("individualFileNamePrefix");
+
+      const request = {
+        cname,
+        uid,
+        clientRequest: {
+          token: token || "",
+          recordingConfig: {
+            maxIdleTime,
+            streamTypes,
+            channelType,
+            videoStreamType,
+            subscribeVideoUids,
+            unsubscribeVideoUids,
+            subscribeAudioUids,
+            unsubscribeAudioUids,
+            subscribeUidGroup
+          },
+          storageConfig: {
+            accessKey,
+            secretKey,
+            region,
+            vendor,
+            bucket,
+            fileNamePrefix
+          }
+        }
+      };
+
+      const snapshotConfig = getSnapshotConfig("individual");
+      if (snapshotConfig) {
+        request.clientRequest.snapshotConfig = snapshotConfig;
+      }
+
+      if (shouldIncludeMp4()) {
+        request.clientRequest.recordingFileConfig = { avFileType: ["hls", "mp4"] };
+      }
+      return request;
+    }
+
+    function buildStartBodyWebForDisplay() {
+      const cname = document.getElementById("cname").value.trim() || "";
+      const uid = document.getElementById("uid").value.trim() || "";
+      const token = document.getElementById("token").value.trim() || "";
+      const webUrl = document.getElementById("webUrl").value.trim() || "";
+      const maxRecordingHour = intVal("webMaxRecordingHour", 3);
+      const audioProfile = intVal("webAudioProfile", 0);
+      const videoWidth = intVal("webVideoWidth", 1280);
+      const videoHeight = intVal("webVideoHeight", 720);
+      const accessKey = document.getElementById("webAccessKey").value.trim() || "";
+      const secretKey = document.getElementById("webSecretKey").value.trim() || "";
+      const vendor = intVal("webVendor", 1);
+      const region = intVal("webRegion", 0);
+      const bucket = document.getElementById("webBucket").value.trim() || "";
+      const fileNamePrefix = arrayVal("webFileNamePrefix");
+
+      const request = {
+        cname,
+        uid,
+        clientRequest: {
+          token: token || "",
+          extensionServiceConfig: {
+            errorHandlePolicy: "error_abort",
+            extensionServices: [{
+              serviceName: "web_recorder_service",
+              errorHandlePolicy: "error_abort",
+              serviceParam: {
+                url: webUrl,
+                audioProfile,
+                videoWidth,
+                videoHeight,
+                maxRecordingHour
+              }
+            }]
+          },
+          storageConfig: {
+            accessKey,
+            secretKey,
+            vendor,
+            region,
+            bucket,
+            fileNamePrefix
+          }
+        }
+      };
+
+      if (shouldIncludeMp4()) {
+        request.clientRequest.recordingFileConfig = { avFileType: ["hls", "mp4"] };
+      }
+      return request;
+    }
+
+    function buildUpdateBodyForDisplay() {
+      const cname = document.getElementById("cname").value.trim() || "";
+      const uid = document.getElementById("uid").value.trim() || "";
+      if (globalMode === "composite") {
+        const subscribeVideoUids = arrayVal("compositeSubscribeVideoUids");
+        const unsubscribeVideoUids = arrayVal("compositeUnsubscribeVideoUids");
+        const subscribeAudioUids = arrayVal("compositeSubscribeAudioUids");
+        const unsubscribeAudioUids = arrayVal("compositeUnsubscribeAudioUids");
+        return {
+          cname,
+          uid,
+          clientRequest: {
+            streamSubscribe: {
+              audioUidList: { subscribeAudioUids, unsubscribeAudioUids },
+              videoUidList: { subscribeVideoUids, unsubscribeVideoUids }
+            }
+          }
+        };
+      } else if (globalMode === "individual") {
+        const subscribeVideoUids = arrayVal("individualSubscribeVideoUids");
+        const unsubscribeVideoUids = arrayVal("individualUnsubscribeVideoUids");
+        const subscribeAudioUids = arrayVal("individualSubscribeAudioUids");
+        const unsubscribeAudioUids = arrayVal("individualUnsubscribeAudioUids");
+        return {
+          cname,
+          uid,
+          clientRequest: {
+            streamSubscribe: {
+              audioUidList: { subscribeAudioUids, unsubscribeAudioUids },
+              videoUidList: { subscribeVideoUids, unsubscribeVideoUids }
+            }
+          }
+        };
+      } else if (globalMode === "web") {
+        const webOnHold = document.getElementById("webOnHoldCheckbox").checked;
+        return {
+          cname,
+          uid,
+          clientRequest: { webRecordingConfig: { onhold: webOnHold } }
+        };
+      }
+      return { cname, uid, clientRequest: {} };
+    }
+
+    function copyStartRequestBody() {
+      const body = buildStartRequestBodyForDisplay();
       const bodyString = JSON.stringify(body, null, 2);
-      navigator.clipboard.writeText(bodyString).then(() => {
-        alert("Start request body copied to clipboard!");
-      }).catch(err => {
-        alert("Failed to copy: " + err);
-      });
+      
+      // Show modal with JSON content
+      const jsonModal = document.getElementById('jsonDisplayModal');
+      const jsonModalTitle = document.getElementById('jsonModalTitle');
+      const jsonModalContent = document.getElementById('jsonModalContent');
+      
+      if (jsonModal && jsonModalTitle && jsonModalContent) {
+        jsonModalTitle.textContent = 'Start Request Body JSON';
+        jsonModalContent.textContent = bodyString;
+        jsonModal.classList.remove('hidden');
+        
+        // Copy to clipboard (don't show error if it fails, user can copy from modal)
+        navigator.clipboard.writeText(bodyString).catch(() => {
+          // Silently fail - user can copy from modal
+        });
+      }
     }
 
     function copyUpdateRequestBody() {
-      const body = buildUpdateBody();
-      if (!body) {
-        alert("Update request body is invalid or missing required fields.");
-        return;
-      }
+      const body = buildUpdateBodyForDisplay();
       const bodyString = JSON.stringify(body, null, 2);
-      navigator.clipboard.writeText(bodyString).then(() => {
-        alert("Update request body copied to clipboard!");
-      }).catch(err => {
-        alert("Failed to copy: " + err);
-      });
+      
+      // Show modal with JSON content
+      const jsonModal = document.getElementById('jsonDisplayModal');
+      const jsonModalTitle = document.getElementById('jsonModalTitle');
+      const jsonModalContent = document.getElementById('jsonModalContent');
+      
+      if (jsonModal && jsonModalTitle && jsonModalContent) {
+        jsonModalTitle.textContent = 'Update Request Body JSON';
+        jsonModalContent.textContent = bodyString;
+        jsonModal.classList.remove('hidden');
+        
+        // Copy to clipboard (don't show error if it fails, user can copy from modal)
+        navigator.clipboard.writeText(bodyString).catch(() => {
+          // Silently fail - user can copy from modal
+        });
+      }
     }
 
     /* ---------------- CLOUD ANIMATION FUNCTION ---------------- */
@@ -1502,6 +1802,30 @@
       });
     }
   </script>
+  
+  <!-- JSON Display Modal -->
+  <div id="jsonDisplayModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="modern-card w-full max-w-4xl mx-4 max-h-[90vh] min-h-[400px] flex flex-col">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-bold gradient-text-primary" id="jsonModalTitle">JSON Configuration</h3>
+        <button id="closeJsonModal" class="text-gray-400 hover:text-white text-2xl font-bold leading-none">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="flex-1 overflow-hidden min-h-0">
+        <pre id="jsonModalContent" class="bg-gray-900 text-green-400 p-4 rounded text-sm overflow-auto h-full font-mono whitespace-pre-wrap max-h-full"></pre>
+      </div>
+      <div class="flex justify-end mt-4 space-x-2">
+        <button id="copyJsonFromModal" class="modern-btn modern-btn-primary">
+          Copy to Clipboard
+        </button>
+        <button id="closeJsonModalBtn" class="modern-btn modern-btn-secondary">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
   <a
   href="https://github.com/AgoraIO-Community/agora-cloud-record-console"
   target="_blank"
